@@ -1,0 +1,6 @@
+# Build and Release Folders
+.Rhistory
+.idea
+test
+.ipynb*
+test/test.py
