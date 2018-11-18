@@ -1,0 +1,160 @@
+package stock
+    version 18.11.15
+    uses 'python3'
+    options noimplicit
+
+    declarations
+        TIME_DAILY = 1
+        TIME_WEEKLY = 7
+        TIME_MONTHLY = 30
+    end-declarations
+
+    public declarations
+        Stock = record
+            ticker: string
+            startDate: string
+            endDate: string
+            intervalType: string
+            dateRange: list of string
+            closePrices: list of real
+            openPrices: list of real
+            highPrices: list of real
+            lowPrices: list of real
+            volume: list of real
+        end-record
+    end-declarations
+
+    ! Get Methods
+
+    public function getTicker(aStock: Stock): string
+        returned := aStock.ticker
+    end-function
+
+    public function getStartDate(aStock: Stock): string
+        returned := aStock.startDate
+    end-function
+
+    public function getEndDate(aStock: Stock): string
+        returned := aStock.endDate
+    end-function
+
+    public function getDateRange(aStock: Stock): list of string
+        returned := aStock.dateRange
+    end-function
+
+    public function getOpenPrices(aStock: Stock): list of real
+        returned := aStock.openPrices
+    end-function
+
+    public function getClosePrices(aStock: Stock): list of real
+        returned := aStock.closePrices
+    end-function
+
+    public function getHighPrices(aStock: Stock): list of real
+        returned := aStock.highPrices
+    end-function
+
+    public function getLowPrices(aStock: Stock): list of real
+        returned := aStock.lowPrices
+    end-function
+
+    public function getVolume(aStock: Stock): list of real
+        returned := aStock.volume
+    end-function
+
+    ! Set Methods
+
+    public procedure setTicker(aStock: Stock,ticker: string)
+        aStock.ticker :=ticker
+    end-procedure
+
+    public procedure setStartDate(aStock: Stock,startDate: string)
+        aStock.startDate :=startDate
+    end-procedure
+
+    public procedure setEndDate(aStock: Stock,endDate: string)
+        aStock.endDate :=endDate
+    end-procedure
+
+    public procedure setDateRange(aStock: Stock,dateRange: list of string)
+        aStock.dateRange :=dateRange
+    end-procedure
+
+    public procedure setOpenPrices(aStock: Stock,openPrices: list of real)
+        aStock.openPrices := openPrices
+    end-procedure
+
+    public procedure setClosePrices(aStock: Stock,closePrices: list of real)
+        aStock.closePrices := closePrices
+    end-procedure
+
+    public procedure setHighPrices(aStock: Stock,highPrices: list of real)
+        aStock.highPrices := highPrices
+    end-procedure
+
+    public procedure setLowPrices(aStock: Stock,lowPrices: list of real)
+        aStock.lowPrices := lowPrices
+    end-procedure
+
+    public procedure setVolume(aStock: Stock,volume: list of real)
+        aStock.volume := volume
+    end-procedure
+
+    public function queryPyStock(ticker: string,startDate: string,endDate: string,periodType: integer): Stock
+        declarations
+            aStock : Stock
+            tmpDateRange: list of string
+            tmpOpenPrices: list of real
+            tmpClosePrices: list of real
+            tmpHighPrices: list of real
+            tmpLowPrices: list of real
+            tmpVolume: list of real
+
+            timeType: string
+        end-declarations
+        setTicker(aStock,ticker)
+        setStartDate(aStock,startDate)
+        setEndDate(aStock,endDate)
+
+        if(periodType=TIME_DAILY) then
+            timeType := 'daily'
+        elif(periodType=TIME_WEEKLY) then
+            timeType := 'weekly'
+        elif(periodType=TIME_MONTHLY) then
+            timeType := 'monthly'
+        end-if
+
+        ! Set stock attributes
+        initializations to "python:inputdata"
+            ticker as 'ticker'
+            startDate as 'startDate'
+            endDate as 'endDate'
+            timeType as 'periodType'
+        end-initializations
+
+        pyrun("stock.py")
+
+        initializations from PY_IO_GLOBAL_VAR
+            tmpDateRange as 'dateRange'
+            tmpOpenPrices as 'openPrices'
+            tmpClosePrices as 'closePrices'
+            tmpHighPrices as 'highPrices'
+            tmpLowPrices as 'lowPrices'
+            tmpVolume as 'volume'
+        end-initializations
+        !writeln("tmpDateRange=",tmpDateRange)
+        !writeln("tmpOpenPrices=",tmpOpenPrices)
+        !writeln("tmpClosePrices=",tmpClosePrices)
+        !writeln("tmpHighPrices=",tmpHighPrices)
+        !writeln("tmpLowPrices=",tmpLowPrices)
+        !writeln("tmpVolume=",tmpVolume)
+        setDateRange(aStock,tmpDateRange)
+        setOpenPrices(aStock,tmpOpenPrices)
+        setClosePrices(aStock,tmpClosePrices)
+        setHighPrices(aStock,tmpHighPrices)
+        setLowPrices(aStock,tmpLowPrices)
+        setVolume(aStock,tmpVolume)
+        returned := aStock
+    end-function
+
+end-package

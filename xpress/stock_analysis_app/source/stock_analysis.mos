@@ -1,0 +1,186 @@
+(!*********************************************************
+    Stock Analysis Main
+===============================
+18.11.15 First Version to start
+
+author: R. Xie
+************************************************************!)
+package stock_analysis
+options noimplicit
+
+uses 'mminsight'
+uses 'mmsheet'
+uses 'mmssl'
+uses 'mmsystem'
+uses 'sdkutil'
+uses 'sdksegment'
+
+uses 'projectdeclare'
+uses 'python3'
+
+!@insight.resultdata.delete=on-queue
+
+!@insight.execmodes.MODE_QUERYPRICE.preferredservice=PRIMARY
+
+!@mc.flush
+
+public function stock_analysis_version: text
+    returned:="2018.11.15"
+end-function
+
+!******************************************************************************************************************************
+!******PRIVATE VARIABLES  ****************************************************************************************************
+!******************************************************************************************************************************
+
+!******************************************************************************************************************************
+!******FORWARD PROCEDURES  ****************************************************************************************************
+!******************************************************************************************************************************
+forward procedure loadProcedure
+forward procedure queryAdhocWatchList
+forward function querySingleStock(vwInputTicker: string,vwInputStartDate: string,vwInputEndDate: string, vwInputPeriod: integer):Stock
+forward procedure cleanResults
+
+!******************************************************************************************************************************
+!******MAIN  ******************************************************************************************************************
+!******************************************************************************************************************************
+public procedure stock_analysis
+    ! Versions
+    logging(0, "----------------------------------------------------------")
+    logging(0, "Mosel script versions: ")
+    logging(0, "     app version            : "+modelversion)
+    logging(0, "     stock_analysis.mos            : "+stock_analysis_version)
+    logging(0, "     SDK                    : "+sdkversion)
+    logging(0, "     Scenario               : "+getparam("insight_scenario_path"))
+    setparam("UTC",true)
+    logging(0, "     UTC Time               : "+string(date(currentdate))+ " " + string(time(integer(currenttime/1000)*1000)))
+    setparam("UTC",false)
+    logging(0, "     Local Time             : "+string(date(currentdate))+ " " + string(time(integer(currenttime/1000)*1000)))
+    logging(0, "-----------------------------------------------------------")
+
+    ! set verbose level
+    setparam("sqldebug",true)
+    utilsetparam("verbose",10)
+
+
+    case insightgetmode of
+        ! Load
+        INSIGHT_MODE_LOAD: do
+            logging(0,"Insight Mode: Load")
+            loadProcedure
+            logging(0,"Do nothing")
+        end-do
+
+        INSIGHT_MODE_RUN: do
+            logging(0,"Insight Mode: Run")
+            insightpopulate
+            logging(0,"Do nothing")
+        end-do
+
+        SEG_MODE_EVAL: do
+            insightpopulate
+            logging(0,"Do nothing")
+            exit
+        end-do
+
+        "MODE_QUERYPRICE": do
+            logging(0,"Insight Mode: Select Source")
+            insightpopulate
+            cleanResults
+            queryAdhocWatchList
+            logging(0,"Do nothing")
+            exit
+        end-do
+
+        INSIGHT_MODE_NONE: do
+            logging(0,"Insight Mode: NONE")
+            logging(0,"Do nothing")
+        end-do
+    else
+        errorlog("Not Valid Insight Mode:"+insightgetmode)
+        exit
+    end-case
+
+end-procedure
+
+!@doc.descr load procedure to load default settings
+procedure loadProcedure
+    logging(0,"Load Scenario")
+    vwInputPeriod := TIME_DAILY
+    ostPeriods := {TIME_DAILY,TIME_WEEKLY,TIME_MONTHLY}
+    mapPeriodDescr(TIME_DAILY) := "Daily"
+    mapPeriodDescr(TIME_WEEKLY) := "Weekly"
+    mapPeriodDescr(TIME_MONTHLY) := "Monthly"
+
+    logging(0,"Finished Load Scenario")
+end-procedure
+
+!@doc.descr Query any adhoc request for watch list candidates
+procedure queryAdhocWatchList
+    declarations
+        adhocStock: Stock
+        tmpTicker : string
+        tmpDateRange: list of string
+        tmpOpenPrices: list of real
+        tmpClosePrices: list of real
+        tmpHighPrices: list of real
+        tmpLowPrices: list of real
+        tmpVolume: list of real
+
+        tmpDateRangeAr: array(tmpRgDate: range) of string
+    end-declarations
+    logging(0,"Query the equity price for watchlist")
+
+    adhocStock := querySingleStock(vwInputTicker,vwInputStartDate,vwInputEndDate,vwInputPeriod)
+    tmpDateRange := getDateRange(adhocStock)
+    tmpHighPrices := getHighPrices(adhocStock)
+    tmpLowPrices := getLowPrices(adhocStock)
+    tmpOpenPrices := getOpenPrices(adhocStock)
+    tmpClosePrices := getClosePrices(adhocStock)
+    tmpVolume := getVolume(adhocStock)
+
+    forall(d in tmpDateRange, cnt as counter) do
+        tmpDateRangeAr(cnt) := d
+    end-do
+    forall(p in tmpOpenPrices, cnt as counter) do
+        rsOpenPrices(vwInputTicker,tmpDateRangeAr(cnt)) := p
+    end-do
+    forall(p in tmpClosePrices, cnt as counter) do
+        rsClosePrices(vwInputTicker,tmpDateRangeAr(cnt)) := p
+    end-do
+    forall(p in tmpHighPrices, cnt as counter) do
+        rsHighPrices(vwInputTicker,tmpDateRangeAr(cnt)) := p
+    end-do
+    forall(p in tmpLowPrices, cnt as counter) do
+        rsLowPrices(vwInputTicker,tmpDateRangeAr(cnt)) := p
+    end-do
+    forall(p in tmpVolume, cnt as counter) do
+        rsVolume(vwInputTicker,tmpDateRangeAr(cnt)) := p
+    end-do
+
+    logging(0,"Finished Query the equity price for watchlist")
+
+end-procedure
+
+!@doc.descr This procedure takes input of ticker, start/end date to return a stock record
+function querySingleStock(vwInputTicker: string,vwInputStartDate: string,vwInputEndDate: string, vwInputPeriod: integer):Stock
+    declarations
+        aStock : Stock
+        status: integer
+    end-declarations
+
+    aStock := queryPyStock(vwInputTicker,vwInputStartDate,vwInputEndDate,vwInputPeriod)
+
+    returned := aStock
+
+end-function
+
+!@doc.descr Clean All Results
+procedure cleanResults
+    delcell(rsOpenPrices)
+    delcell(rsClosePrices)
+    delcell(rsHighPrices)
+    delcell(rsLowPrices)
+    delcell(rsVolume)
+end-procedure
+
+end-package

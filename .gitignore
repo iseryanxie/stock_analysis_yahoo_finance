@@ -1,6 +1,13 @@
 # Build and Release Folders
 .Rhistory
 .idea
-test
+temp
 .ipynb*
-test/test.py
+temp/test.py
+/xpress/stock_analysis_app/.c9
+/xpress/stock_analysis_app/stock_analysis_app.zip
+/xpress/stock_analysis_app/client_resources/js
+/xpress/stock_analysis_app/client_resources/css
+/xpress/stock_analysis_app/client_resources/sdk4.1.vdl
+/xpress/stock_analysis_app/source/sdk*
+*.bim

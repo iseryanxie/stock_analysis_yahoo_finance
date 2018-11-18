@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+
+<model-companion xmlns="http://www.fico.com/xpress/optimization-modeler/model-companion"
+ version="3.0">
+
+
+  <database-mirror table-prefix="STOCK_ANALYSIS_" > <!--sync-after-execution="false" >-->
+	<mirror-tables>
+
+		<mirror-table name="Price">
+			<entity name="rsOpenPrices"/>
+			<entity name="rsClosePrices"/>
+			<entity name="rsHighPrices"/>
+			<entity name="rsLowPrices"/>
+			<entity name="rsVolume"/>
+		</mirror-table>
+
+
+	</mirror-tables>
+
+  </database-mirror>
+
+
+
+
+  <custom-authorities>
+
+	</custom-authorities>
+
+  <attachment-config>
+    <attachment-tags>
+
+      <!--<attachment-tag name="finish-txnid" usage="multi-file">-->
+      <!--  <description>Finished Transaction ID to support Pause/Resume</description>-->
+      <!--</attachment-tag>-->
+
+
+
+	  </attachment-tags>
+  </attachment-config>
+
+  <client>
+
+    <view-group title="Configure Portfolio">
+        <vdl-view title="Welcome" empty-selection-default="true" path="welcome.vdl" requires-scenarios-loaded="false"/>
+    </view-group>
+
+    <view-group title="Analysis">
+        <vdl-view title="My Watch List" path="watchlist.vdl" />
+        <tableau-workbook  workbook="QuoteLookup" managed="true"/>
+    </view-group>
+
+	<tableau>
+		<!-- Applied to all views in all workbooks -->
+		<global-filter name="Metric Name"/>
+		<global-filter name="Segment Group Name"/>
+		<global-filter name="Segment Name"/>
+		<global-filter name="Scenario Name"/>
+		<global-filter name="Slot Objective"/>
+	</tableau>
+
+    <!--<client-resources-local-path>C:\svn\demos\ifrs9\client_resources</client-resources-local-path>-->
+
+	<!--<client-resources-local-path>C:\Ryan\Work\ADS\ADS_PCA\dev\client_resources</client-resources-local-path>-->
+	</client>
+</model-companion>

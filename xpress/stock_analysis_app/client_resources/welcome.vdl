@@ -1,0 +1,52 @@
+<vdl version="4.1">
+	<vdl-include src="sdk4.1.vdl"></vdl-include>
+	<vdl-include src="js/insightExtended/inExt4.1.vdl"></vdl-include>
+
+
+	<style>
+		.form-horizontal .control-label {
+		text-align: left !important;
+		}
+		vdl-row.outlined {
+		outline: 1px solid #888;
+		margin: 10px;
+		}
+
+	</style>
+
+	<vdl-page>
+
+
+			<vdl-section heading="Portfolio Management" heading-level="1">
+            <vdl-row>
+                <vdl-column size="12">
+                    <p>
+                        Welcome to Portfolio Management.
+                    </p>
+
+
+                </vdl-column>
+            </vdl-row>
+
+            <vdl-row>
+                <vdl-column>
+                    <h5>Contents</h5>
+
+                    <ul id="main-links">
+                        <li class="box"><a href="#" onclick="insight.openView('Setup')">
+                            <h5>My Portfolio</h5>
+                            <p>Manage my portfolio</p>
+                        </a></li>
+
+                    </ul>
+                </vdl-column>
+            </vdl-row>
+
+
+        </vdl-section>
+
+
+	</vdl-page>
+</vdl>
+
+

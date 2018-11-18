@@ -1,0 +1,45 @@
+model ModelName
+    uses 'mmsystem';
+    uses 'python3';
+    options noimplicit
+
+    ! pyrun("helloPython.py")
+
+    declarations
+        ticker : string
+        startDate: string
+        endDate: string
+        periodType: string
+        modeRun: string
+
+        arPriceChgCorr: dynamic array(tmpIdxStocks: set of string,tmpIdxStocks) of real
+    end-declarations
+
+    ticker := "BABA"
+    startDate := "2016-01-15"
+    endDate := "2017-10-15"
+    periodType := "weekly"
+
+    modeRun := "groupcorr"
+
+    ! arPriceChgCorr("C","C") := 1.0
+    ! arPriceChgCorr("BAC","BAC") := 0.8
+
+    initializations to "python:inputdata"
+        ticker
+        startDate
+        endDate
+        periodType
+        modeRun
+
+        ! arPriceChgCorr
+    end-initializations
+
+    pyrun("stock.py")
+
+    initializations from PY_IO_GLOBAL_VAR
+        arPriceChgCorr as 'arPriceChgCorr'
+    end-initializations
+
+    writeln(arPriceChgCorr)
+end-model

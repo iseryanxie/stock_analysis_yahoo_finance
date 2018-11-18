@@ -1,0 +1,78 @@
+package projectdeclare
+  options noimplicit
+
+  uses "mminsight"
+  uses "sdkdatarule"
+  uses "mmxml";
+  uses "mmhttp";
+  uses "mmxnlp";
+  uses "stock";
+
+  ! entities used in VDL views
+
+  !@insight.manage input
+  public declarations
+    TIME_DAILY = 1
+    TIME_WEEKLY = 7
+    TIME_MONTHLY = 30
+
+    TIME_ANNUAL = "Annual"
+    TIME_QUARTER = "Quarterly"
+  end-declarations
+
+  !@insight.manage input
+  !@insight.update.afterexecution
+  public declarations
+    SAMPLE_ALL = "All Records"
+
+  end-declarations
+
+  !@insight.manage ignore
+  public declarations
+    ! app version
+    modelversion: string
+  end-declarations
+
+  ! Settings
+  !@insight.manage input
+  !@insight.update.afterexecution
+  public declarations
+    vwInputTicker: string
+    vwInputStartDate,vwInputEndDate: string
+    vwInputPeriod: integer
+    !@insight.transform.labels.entity mapPeriodDescr
+    idxPeriods: set of integer
+    mapPeriodDescr: dynamic array(idxPeriods) of string
+    !@insight.transform.labels.entity mapPeriodDescr
+    ostPeriods: set of integer
+    
+    idxGroupName: set of string
+    idxTickerName: set of string
+    vwGrpStockChoose: dynamic array(idxGroupName,idxTickerName) of boolean
+  end-declarations
+
+  !@insight.manage input
+  !@insight.update.afterexecution
+  public declarations
+    ! Required Data Fields Mapping
+    idxColumnInModel: set of string
+    ColumnInData: dynamic array(idxColumnInModel) of string
+
+  end-declarations
+
+  ! Output Arrays to be mirrored
+  !@insight.manage input
+  !@insight.update.afterexecution
+  public declarations
+    ! entities used in Mirror Database
+    idxStock,idxDates: set of string
+    rsOpenPrices: dynamic array(idxStock,idxDates) of real
+    rsClosePrices: dynamic array(idxStock,idxDates) of real
+    rsHighPrices: dynamic array(idxStock,idxDates) of real
+    rsLowPrices: dynamic array(idxStock,idxDates) of real
+    rsVolume: dynamic array(idxStock,idxDates) of real
+
+
+  end-declarations
+
+end-package
