@@ -10,6 +10,7 @@ I started this repo to
 
 ## Release Note
 > 18.09.17 init version (README only)
+> 18.11.17 first version of insight app added
 
 ## Dependencies
 @github: JECSand/yahoofinancials
