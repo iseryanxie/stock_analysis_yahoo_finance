@@ -1,0 +1,51 @@
+<vdl version="4.1">
+<vdl-include src="sdk4.1.vdl"></vdl-include>
+<vdl-include src="js/insightExtended/inExt4.1.vdl"></vdl-include>
+
+<script>
+
+</script>
+<style>
+    .form-horizontal .control-label {
+    text-align: left !important;
+    }
+    vdl-row.outlined {
+    outline: 1px solid #888;
+    margin: 10px;
+    }
+    vdl-column.outlined {
+    outline: 1px solid #888;
+    margin: 10px;
+    }
+
+</style>
+
+<vdl-page class="compact">
+    <sdk-toolbar>
+        <sdk-history></sdk-history>
+        <sdk-messages error-enabled="=true" info-enabled="=true" warning-enabled="=true" timeout="12">
+        </sdk-messages>
+    </sdk-toolbar>
+
+    <vdl-section>
+        <h3>My Watch List</h3>
+        <hr>
+        Under Constructions
+        <h3>Quote Lookup</h3>
+        <hr>
+        <vdl-form>
+            <vdl-field entity="vwInputTicker" label="Ticker" size="2">
+            </vdl-field>
+            <vdl-field entity="vwInputStartDate" type="date" label="Start Date" size="2">
+            </vdl-field>
+            <vdl-field entity="vwInputEndDate" type="date" label="End Date" size="2">
+            </vdl-field>
+            <vdl-field entity="vwInputPeriod" label="Periods" options-set="ostPeriods" size="2">
+            </vdl-field>
+        </vdl-form>
+        <vdl-execute-button mode="MODE_QUERYPRICE" caption="Lookup" ></vdl-execute-button>
+    </vdl-section>
+
+</vdl-page>
+</vdl>
+

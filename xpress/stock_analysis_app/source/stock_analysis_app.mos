@@ -1,0 +1,20 @@
+model "Portfolio Management"
+	uses 'mminsight'
+	uses 'stock_analysis'
+	version 18.11.15
+
+
+modelversion:=getparam("model_version")
+stock_analysis
+
+
+(!*********************************************************
+	ADS PCA - Demo App
+===============================
+
+18.11.15 First Version to start
+
+author: R. Xie
+************************************************************!)
+
+end-model
